@@ -1,5 +1,5 @@
 import React from "react";
-import { useContext, useState,useCallback ,useEffect} from "react";
+import { useContext, useState, useCallback, useEffect } from "react";
 import useLocalStoragehook from "../hooks/useLocalStoragehook";
 import { useSocket } from "./Sockerprovider";
 
@@ -13,14 +13,12 @@ export function Chatprovider({ ID, children }) {
   const [chat, setchat] = useLocalStoragehook("chat", []);
   const [selectedchat, setselectedchat] = useState(0);
   const [selectedid, setseectedid] = useState(0);
-  const socket=useSocket();
+  const socket = useSocket();
 
   // socket.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT");
 
-  
   function createchat(id, name) {
-
-    setchat(prevchat => {
+    setchat((prevchat) => {
       // prevchat.push({ id, name, messages: [] })
       return [...prevchat, { id, name, messages: [] }];
     });
@@ -45,135 +43,142 @@ export function Chatprovider({ ID, children }) {
     return false;
   }
 
-  const addchattochatbox=useCallback(({ recipient, text, sender })=>{
-    console.log({ recipient, text, sender });
-     
-   
-    setchat((prevchat) => {
-      // let madechange=findrecipientinchat(recipient)
-    const fromme=sender===ID
-      let madechange = false;
-      const newMessage = { text, fromme};
+  const addchattochatbox = useCallback(
+    ({ recipient, text, sender }) => {
+      console.log({ recipient, text, sender });
 
-      // const newConversations = prevchat.map((conversation,idx)=> {
+      setchat((prevchat) => {
+        // let madechange=findrecipientinchat(recipient)
+        const fromme = sender === ID;
+        let madechange = false;
 
-      //   console.log(conversation.name);
+        let file = false;
 
-      //   if (conversation.id === recipient) {
-      //       conversation.messages.push({newMessage});
-
-      //   }
-      // });
-      let newConversations;
-         if(prevchat[0]!=null){
-       newConversations = prevchat.map((conversation) => {
-        if (conversation.id === recipient) {
-          madechange = true;
-          return {
-            ...conversation,
-            messages: [...conversation.messages, newMessage],
-          };
+        if (text.length > 100) {
+          file = true;
         }
 
-        return conversation;
-      });
-         }
-      if (madechange) {
-        console.log("yes");
-        return newConversations;
-      } else {
-        return prevchat.push({
-          id: "Newchat",
-          name: "newNmae",
-          messages: { newMessage },
-        });
-      }
-    });
-  },[setchat])
+        const newMessage = { text, fromme, file };
 
+        // const newConversations = prevchat.map((conversation,idx)=> {
 
+        //   console.log(conversation.name);
 
+        //   if (conversation.id === recipient) {
+        //       conversation.messages.push({newMessage});
 
- const addrecievedmessage=useCallback(({recipient, text, sender})=>{
+        //   }
+        // });
+        let newConversations;
+        if (prevchat[0] != null) {
+          newConversations = prevchat.map((conversation) => {
+            if (conversation.id === recipient) {
+              madechange = true;
+              return {
+                ...conversation,
+                messages: [...conversation.messages, newMessage],
+              };
+            }
 
-
-  setchat((previchat) => {
-    // let madechange=findrecipientinchat(recipient)
-  const fromme=sender===ID
-    let madechange = false;
-    const newMessage = { text, fromme};
-
-    // const newConversations = prevchat.map((conversation,idx)=> {
-
-    //   console.log(conversation.name);
-
-    //   if (conversation.id === recipient) {
-    //       conversation.messages.push({newMessage});
-
-    //   }
-    // });
-
-    let newConversations;
-    if(previchat){
-     newConversations = previchat.map((conversation) => {
-      if (conversation.id === sender) {
-        madechange = true;
-        return {
-          ...conversation,
-          messages: [...conversation.messages, newMessage],
-        };
-      }
-
-      return conversation;
-    });
-    }
-    if (madechange) {
-      console.log("yes");
-      return newConversations;
-    } else {
-      createchat(sender,"newchat");
-      console.log("new chat created")
-
-     return newConversations = previchat.map((conversation) => {
-        if (conversation.id === sender) {
-          madechange = true;
-          const newMessage = { text, fromme};
-
-          return {
-            ...conversation,
-            messages: [...conversation.messages, newMessage],
-          };
+            return conversation;
+          });
         }
-  
-        return conversation;
+        if (madechange) {
+          console.log("yes");
+          return newConversations;
+        } else {
+          return prevchat.push({
+            id: "Newchat",
+            name: "newNmae",
+            messages: { newMessage },
+          });
+        }
       });
-
-
-
-
-    //  addrecievedmessage({recipient,text,sender});
-
-
-      } }
+    },
+    [setchat]
   );
 
- },[setchat])
+  const addrecievedmessage = useCallback(
+    ({ recipient, text, sender }) => {
+      console.log(text.body);
 
+      setchat((previchat) => {
+        // let madechange=findrecipientinchat(recipient)
+        const fromme = sender === ID;
+        let madechange = false;
+        let file = false;
 
+        if (text.length > 100) {
+          file = true;
+        }
+        const newMessage = { text, fromme, file };
+
+        // const newConversations = prevchat.map((conversation,idx)=> {
+
+        //   console.log(conversation.name);
+
+        //   if (conversation.id === recipient) {
+        //       conversation.messages.push({newMessage});
+
+        //   }
+        // });
+
+        let newConversations;
+        if (previchat) {
+          newConversations = previchat.map((conversation) => {
+            if (conversation.id === sender) {
+              madechange = true;
+              return {
+                ...conversation,
+                messages: [...conversation.messages, newMessage],
+              };
+            }
+
+            return conversation;
+          });
+        }
+        if (madechange) {
+          console.log("yes");
+          return newConversations;
+        } else {
+          createchat(sender, "newchat");
+          console.log("new chat created");
+
+          return (newConversations = previchat.map((conversation) => {
+            if (conversation.id === sender) {
+              madechange = true;
+              const newMessage = { text, fromme };
+
+              return {
+                ...conversation,
+                messages: [...conversation.messages, newMessage],
+              };
+            }
+
+            return conversation;
+          }));
+
+          //  addrecievedmessage({recipient,text,sender});
+        }
+      });
+    },
+    [setchat]
+  );
 
   useEffect(() => {
-    if (socket == null) return
+    if (socket == null) return;
 
-    socket.on('receive-message', addrecievedmessage)
+    socket.on("receive-message", addrecievedmessage);
 
-    return () => socket.off('receive-message')
-  }, [socket, addrecievedmessage])
+    return () => socket.off("receive-message");
+  }, [socket, addrecievedmessage]);
 
   function sendmessage(recipient, text) {
     console.log({ recipient, text });
-    socket.emit('send-message',{recipient,text})
-    console.log("messageg sent")
-    addchattochatbox({ recipient, text, sender: ID});
+    socket.emit("send-message", { recipient, text });
+    console.log("message sent");
+
+    addchattochatbox({ recipient, text, sender: ID });
   }
 
   function setselectedchatid(num) {
