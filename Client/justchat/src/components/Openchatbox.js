@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useChat } from "../context/Chatprovider";
-import Image from "./Image";
+// import Image from "./Image";
 // import {useEffect } from "react";
 // import useLocalStoragehookfil from "../hooks/useLocalstoragefile";
 
