@@ -110,8 +110,8 @@ export default function Openchatbox() {
           })}
         </div>
             { file ?
-           <div>preivew
-          <img id="previewi" alt="not" height={200} width={200} src={file}/></div>:
+           <div>Click Send to send preview:
+          <img id="previewi" alt="not" height={200} width={200} src={file}/> </div>:
                 " "
 
             }
